@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import * as T from '@/lib/theme';
 
 type Stats = {
   totalContacts: number;
@@ -22,21 +23,16 @@ type Campaign = {
 };
 
 const statusColor: Record<string, string> = {
-  draft: '#6b7280',
-  pending_approval: '#f59e0b',
-  approved: '#6c63ff',
+  draft: '#555',
+  pending_approval: '#eab308',
+  approved: '#0f9e5e',
   sending: '#3b82f6',
-  sent: '#22c55e',
-  failed: '#ef4444',
+  sent: '#10b981',
+  failed: '#dc2626',
 };
-
 const statusLabel: Record<string, string> = {
-  draft: 'Borrador',
-  pending_approval: 'Pendiente',
-  approved: 'Aprobado',
-  sending: 'Enviando',
-  sent: 'Enviado',
-  failed: 'Error',
+  draft: 'BORRADOR', pending_approval: 'PENDIENTE', approved: 'APROBADO',
+  sending: 'ENVIANDO', sent: 'ENVIADO', failed: 'ERROR',
 };
 
 export default function Dashboard() {
@@ -46,46 +42,59 @@ export default function Dashboard() {
     fetch('/api/stats').then((r) => r.json()).then(setStats);
   }, []);
 
-  const cards = stats
-    ? [
-        { label: 'Contactos', value: stats.totalContacts, icon: '👥', href: '/contacts', color: '#6c63ff' },
-        { label: 'Campañas', value: stats.totalCampaigns, icon: '📨', href: '/campaigns', color: '#22c55e' },
-        { label: 'Emails Enviados', value: stats.totalSent, icon: '✉', href: '/campaigns', color: '#3b82f6' },
-        { label: 'Pendiente Aprobación', value: stats.pendingApproval, icon: '✦', href: '/ai-generator', color: '#f59e0b' },
-        { label: 'Ideas de Contenido', value: stats.contentIdeas, icon: '📅', href: '/content-plan', color: '#ec4899' },
-      ]
-    : [];
+  const cards = stats ? [
+    { label: 'CONTACTOS', value: stats.totalContacts, href: '/contacts', color: '#0f9e5e', icon: '◆' },
+    { label: 'CAMPAÑAS', value: stats.totalCampaigns, href: '/campaigns', color: '#3b82f6', icon: '◉' },
+    { label: 'EMAILS ENVIADOS', value: stats.totalSent, href: '/campaigns', color: '#10b981', icon: '✉' },
+    { label: 'PARA APROBAR', value: stats.pendingApproval, href: '/ai-generator', color: '#eab308', icon: '✦' },
+    { label: 'IDEAS CONTENIDO', value: stats.contentIdeas, href: '/content-plan', color: '#a855f7', icon: '◎' },
+  ] : [];
+
+  const quickActions = [
+    { href: '/campaigns', label: '+ CAMPAÑA', primary: true },
+    { href: '/ai-generator', label: '✦ GENERAR IA' },
+    { href: '/video-plan', label: '▷ VIDEO PLAN' },
+    { href: '/contacts', label: '+ CONTACTOS' },
+  ];
 
   return (
-    <div style={{ padding: 32, maxWidth: 1100, margin: '0 auto' }}>
+    <div style={{ padding: 36, maxWidth: 1100, margin: '0 auto' }}>
+
       {/* Header */}
-      <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>Dashboard</h1>
-        <p style={{ color: 'var(--muted)', fontSize: 14 }}>
-          Bienvenido a tu plataforma de email marketing.
+      <div style={{ marginBottom: 36 }}>
+        <div style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.16em', fontWeight: 700, marginBottom: 8 }}>
+          CONTRACT — MARKETING HUB
+        </div>
+        <h1 style={{
+          fontFamily: "'Bebas Neue', sans-serif",
+          fontSize: 42, letterSpacing: '0.06em', color: '#fff',
+          lineHeight: 1, marginBottom: 8,
+        }}>
+          DASHBOARD
+        </h1>
+        <p style={{ color: 'var(--muted-2)', fontSize: 14 }}>
+          Commitment made real — monitoreá tus métricas y lanzá campañas.
         </p>
       </div>
 
       {/* Quick Actions */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 32, flexWrap: 'wrap' }}>
-        {[
-          { href: '/campaigns', label: '+ Nueva Campaña', primary: true },
-          { href: '/ai-generator', label: '✦ Generar con IA' },
-          { href: '/contacts', label: '+ Importar Contactos' },
-          { href: '/content-plan', label: '+ Agregar Idea' },
-        ].map(({ href, label, primary }) => (
+      <div style={{ display: 'flex', gap: 10, marginBottom: 32, flexWrap: 'wrap' }}>
+        {quickActions.map(({ href, label, primary }) => (
           <Link
             key={href}
             href={href}
             style={{
-              padding: '10px 18px',
-              borderRadius: 8,
-              fontSize: 14,
-              fontWeight: 500,
+              padding: '9px 18px',
+              borderRadius: 7,
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: '0.08em',
               textDecoration: 'none',
-              background: primary ? 'var(--accent)' : 'var(--card)',
-              color: primary ? '#fff' : 'var(--foreground)',
-              border: primary ? 'none' : '1px solid var(--card-border)',
+              background: primary
+                ? 'linear-gradient(135deg, hsl(155,84%,35%) 0%, hsl(165,80%,30%) 100%)'
+                : 'var(--card)',
+              color: '#fff',
+              border: primary ? 'none' : '1px solid var(--card-border-2)',
             }}
           >
             {label}
@@ -93,101 +102,87 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Stats cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: 16, marginBottom: 32 }}>
-        {cards.map(({ label, value, icon, href, color }) => (
+      {/* Stat cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(185px, 1fr))', gap: 14, marginBottom: 32 }}>
+        {cards.map(({ label, value, href, color, icon }) => (
           <Link
             key={label}
             href={href}
             style={{
-              background: 'var(--card)',
-              border: '1px solid var(--card-border)',
-              borderRadius: 12,
-              padding: 20,
+              ...T.statCard(color),
               textDecoration: 'none',
               display: 'block',
-              transition: 'border-color 0.15s',
             }}
           >
-            <div style={{ fontSize: 24, marginBottom: 8 }}>{icon}</div>
-            <div style={{ fontSize: 28, fontWeight: 700, color }}>{value ?? '—'}</div>
-            <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 4 }}>{label}</div>
+            {/* Glow accent corner */}
+            <div style={{
+              position: 'absolute', top: 0, right: 0, width: 60, height: 60,
+              background: `radial-gradient(circle at top right, ${color}25 0%, transparent 70%)`,
+              borderRadius: '0 12px 0 60px',
+            }} />
+            <div style={{ fontSize: 18, color, marginBottom: 10 }}>{icon}</div>
+            <div style={{ fontSize: 32, fontWeight: 700, color: '#fff', lineHeight: 1, fontFamily: "'Space Grotesk', sans-serif" }}>
+              {value ?? '—'}
+            </div>
+            <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 6, fontWeight: 600, letterSpacing: '0.1em' }}>
+              {label}
+            </div>
           </Link>
         ))}
       </div>
 
-      {/* Recent campaigns */}
-      <div
-        style={{
-          background: 'var(--card)',
-          border: '1px solid var(--card-border)',
-          borderRadius: 12,
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          style={{
-            padding: '16px 20px',
-            borderBottom: '1px solid var(--card-border)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <span style={{ fontWeight: 600 }}>Últimas Campañas</span>
-          <Link href="/campaigns" style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
-            Ver todas →
-          </Link>
-        </div>
+      {/* Divider with Contract tagline */}
+      <div style={{
+        borderTop: '1px solid var(--card-border)',
+        marginBottom: 28,
+        paddingTop: 28,
+        display: 'flex', alignItems: 'center', gap: 12,
+      }}>
+        <span style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.14em', fontWeight: 700 }}>
+          ÚLTIMAS CAMPAÑAS
+        </span>
+        <div style={{ flex: 1, height: 1, background: 'var(--card-border)' }} />
+        <Link href="/campaigns" style={{ fontSize: 11, color: 'var(--muted)', textDecoration: 'none', letterSpacing: '0.06em' }}>
+          VER TODAS →
+        </Link>
+      </div>
+
+      {/* Recent campaigns table */}
+      <div style={{ ...T.card, overflow: 'hidden' }}>
         {!stats || stats.recentCampaigns.length === 0 ? (
-          <div style={{ padding: 32, textAlign: 'center', color: 'var(--muted)', fontSize: 14 }}>
-            Aún no hay campañas.{' '}
-            <Link href="/campaigns" style={{ color: 'var(--accent)', textDecoration: 'none' }}>
-              Crear primera
+          <div style={{ padding: 48, textAlign: 'center' }}>
+            <div style={{ fontSize: 28, marginBottom: 12, color: 'var(--muted)' }}>◈</div>
+            <div style={{ color: 'var(--muted-2)', fontSize: 14, marginBottom: 16 }}>No hay campañas todavía.</div>
+            <Link
+              href="/campaigns"
+              style={{ ...T.btnPrimary, display: 'inline-block', textDecoration: 'none', fontSize: 12, letterSpacing: '0.08em' }}
+            >
+              CREAR PRIMERA CAMPAÑA
             </Link>
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--card-border)' }}>
-                {['Nombre', 'Asunto', 'Estado', 'Enviados', 'Fecha'].map((h) => (
-                  <th
-                    key={h}
-                    style={{
-                      padding: '10px 20px',
-                      textAlign: 'left',
-                      color: 'var(--muted)',
-                      fontWeight: 500,
-                      fontSize: 12,
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    {h}
-                  </th>
+                {['NOMBRE', 'ASUNTO', 'ESTADO', 'ENVIADOS', 'FECHA'].map((h) => (
+                  <th key={h} style={T.tableHeader}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {stats.recentCampaigns.map((c) => (
                 <tr key={c.id} style={{ borderBottom: '1px solid var(--card-border)' }}>
-                  <td style={{ padding: '12px 20px', fontWeight: 500 }}>{c.name}</td>
-                  <td style={{ padding: '12px 20px', color: 'var(--muted)' }}>{c.subject}</td>
-                  <td style={{ padding: '12px 20px' }}>
-                    <span
-                      style={{
-                        background: `${statusColor[c.status]}22`,
-                        color: statusColor[c.status],
-                        padding: '3px 10px',
-                        borderRadius: 20,
-                        fontSize: 12,
-                        fontWeight: 500,
-                      }}
-                    >
+                  <td style={{ padding: '13px 16px', fontWeight: 500 }}>{c.name}</td>
+                  <td style={{ padding: '13px 16px', color: 'var(--muted-2)', fontSize: 12 }}>{c.subject}</td>
+                  <td style={{ padding: '13px 16px' }}>
+                    <span style={T.badge(statusColor[c.status] || '#555')}>
                       {statusLabel[c.status] || c.status}
                     </span>
                   </td>
-                  <td style={{ padding: '12px 20px', color: 'var(--muted)' }}>{c.total_sent}</td>
-                  <td style={{ padding: '12px 20px', color: 'var(--muted)' }}>
+                  <td style={{ padding: '13px 16px', color: 'var(--muted-2)', fontFamily: "'Space Grotesk', monospace" }}>
+                    {c.total_sent.toLocaleString()}
+                  </td>
+                  <td style={{ padding: '13px 16px', color: 'var(--muted)', fontSize: 12 }}>
                     {new Date(c.created_at).toLocaleDateString('es')}
                   </td>
                 </tr>
@@ -195,6 +190,11 @@ export default function Dashboard() {
             </tbody>
           </table>
         )}
+      </div>
+
+      {/* Bottom tagline */}
+      <div style={{ marginTop: 40, textAlign: 'center', fontSize: 11, color: 'var(--card-border-2)', letterSpacing: '0.12em' }}>
+        CONTRACT · COMMITMENT MADE REAL · contractapp.net
       </div>
     </div>
   );

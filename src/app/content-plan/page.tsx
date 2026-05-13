@@ -1,38 +1,28 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import * as T from '@/lib/theme';
 
 type ContentItem = {
-  id: number;
-  title: string;
-  description: string;
+  id: number; title: string; description: string;
   planned_date: string | null;
   status: 'idea' | 'in_progress' | 'ready' | 'sent';
-  campaign_id: number | null;
-  created_at: string;
+  campaign_id: number | null; created_at: string;
 };
 
 const statusOrder = ['idea', 'in_progress', 'ready', 'sent'] as const;
 const statusLabel: Record<string, string> = { idea: 'Idea', in_progress: 'En progreso', ready: 'Listo', sent: 'Enviado' };
-const statusColor: Record<string, string> = { idea: '#6b7280', in_progress: '#f59e0b', ready: '#6c63ff', sent: '#22c55e' };
-
-const inputStyle = {
-  background: 'var(--background)', border: '1px solid var(--card-border)',
-  borderRadius: 8, padding: '9px 12px', color: 'var(--foreground)', fontSize: 14, outline: 'none', width: '100%',
-};
+const statusColor: Record<string, string> = { idea: '#555', in_progress: '#eab308', ready: '#0f9e5e', sent: '#10b981' };
 
 export default function ContentPlanPage() {
   const [items, setItems] = useState<ContentItem[]>([]);
   const [creating, setCreating] = useState(false);
+  const [view, setView] = useState<'kanban' | 'list'>('kanban');
   const [form, setForm] = useState({ title: '', description: '', planned_date: '', status: 'idea' as ContentItem['status'] });
   const [editId, setEditId] = useState<number | null>(null);
-  const [editStatus, setEditStatus] = useState<string>('');
-  const [view, setView] = useState<'kanban' | 'list'>('kanban');
+  const [editStatus, setEditStatus] = useState('');
 
-  async function load() {
-    const r = await fetch('/api/content-plan');
-    setItems(await r.json());
-  }
+  async function load() { const r = await fetch('/api/content-plan'); setItems(await r.json()); }
   useEffect(() => { load(); }, []);
 
   async function create(e: React.FormEvent) {
@@ -45,64 +35,58 @@ export default function ContentPlanPage() {
 
   async function updateStatus(id: number, status: string) {
     await fetch(`/api/content-plan/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) });
-    setEditId(null);
-    load();
+    setEditId(null); load();
   }
 
   async function deleteItem(id: number) {
-    await fetch(`/api/content-plan/${id}`, { method: 'DELETE' });
-    load();
+    await fetch(`/api/content-plan/${id}`, { method: 'DELETE' }); load();
   }
 
-  const grouped = statusOrder.reduce((acc, s) => {
-    acc[s] = items.filter((i) => i.status === s);
-    return acc;
-  }, {} as Record<string, ContentItem[]>);
+  const grouped = statusOrder.reduce((acc, s) => { acc[s] = items.filter(i => i.status === s); return acc; }, {} as Record<string, ContentItem[]>);
 
   return (
-    <div style={{ padding: 32, maxWidth: 1100, margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+    <div style={{ padding: 36, maxWidth: 1100, margin: '0 auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 32 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 4 }}>Plan de Contenido</h1>
-          <p style={{ color: 'var(--muted)', fontSize: 14 }}>Organiza tus ideas de email antes de producirlas</p>
+          <div style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.16em', fontWeight: 700, marginBottom: 8 }}>CONTRACT — CONTENIDO</div>
+          <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 42, letterSpacing: '0.06em', color: '#fff', lineHeight: 1, marginBottom: 6 }}>CONTENT PLAN EMAIL</h1>
+          <p style={{ color: 'var(--muted-2)', fontSize: 14 }}>Planificá tus campañas antes de producirlas</p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={() => setView(view === 'kanban' ? 'list' : 'kanban')} style={{ padding: '8px 14px', background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 8, color: 'var(--foreground)', cursor: 'pointer', fontSize: 13 }}>
-            {view === 'kanban' ? '☰ Lista' : '⊞ Kanban'}
+          <button onClick={() => setView(v => v === 'kanban' ? 'list' : 'kanban')} style={{ ...T.btnSecondary, fontSize: 11, letterSpacing: '0.06em' }}>
+            {view === 'kanban' ? '☰ LISTA' : '⊞ KANBAN'}
           </button>
-          <button onClick={() => setCreating(true)} style={{ padding: '8px 18px', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600 }}>
-            + Nueva Idea
-          </button>
+          <button onClick={() => setCreating(true)} style={{ ...T.btnPrimary, fontSize: 12, letterSpacing: '0.08em' }}>+ NUEVA IDEA</button>
         </div>
       </div>
 
       {creating && (
-        <div style={{ background: 'var(--card)', border: '1px solid var(--accent)', borderRadius: 12, padding: 24, marginBottom: 24 }}>
-          <h3 style={{ fontWeight: 600, marginBottom: 18 }}>Nueva idea de contenido</h3>
+        <div style={{ ...T.card, border: '1px solid var(--accent)', padding: 24, marginBottom: 24 }}>
+          <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, letterSpacing: '0.06em', marginBottom: 18 }}>NUEVA IDEA</h3>
           <form onSubmit={create}>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12, marginBottom: 14 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12, marginBottom: 12 }}>
               <div>
-                <label style={{ fontSize: 12, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>Título *</label>
-                <input style={inputStyle} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Email de bienvenida a nuevos usuarios" required />
+                <label style={{ fontSize: 10, color: 'var(--muted)', letterSpacing: '0.1em', fontWeight: 700, display: 'block', marginBottom: 5 }}>TÍTULO *</label>
+                <input style={T.input} value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="Email de bienvenida a nuevos usuarios" required />
               </div>
               <div>
-                <label style={{ fontSize: 12, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>Fecha planificada</label>
-                <input style={inputStyle} type="date" value={form.planned_date} onChange={(e) => setForm((f) => ({ ...f, planned_date: e.target.value }))} />
+                <label style={{ fontSize: 10, color: 'var(--muted)', letterSpacing: '0.1em', fontWeight: 700, display: 'block', marginBottom: 5 }}>FECHA</label>
+                <input style={T.input} type="date" value={form.planned_date} onChange={e => setForm(f => ({ ...f, planned_date: e.target.value }))} />
               </div>
               <div>
-                <label style={{ fontSize: 12, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>Estado</label>
-                <select style={inputStyle} value={form.status} onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as ContentItem['status'] }))}>
-                  {statusOrder.map((s) => <option key={s} value={s}>{statusLabel[s]}</option>)}
+                <label style={{ fontSize: 10, color: 'var(--muted)', letterSpacing: '0.1em', fontWeight: 700, display: 'block', marginBottom: 5 }}>ESTADO</label>
+                <select style={T.input} value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as ContentItem['status'] }))}>
+                  {statusOrder.map(s => <option key={s} value={s}>{statusLabel[s]}</option>)}
                 </select>
               </div>
             </div>
             <div style={{ marginBottom: 14 }}>
-              <label style={{ fontSize: 12, color: 'var(--muted)', display: 'block', marginBottom: 4 }}>Descripción / notas</label>
-              <textarea rows={3} style={{ ...inputStyle, resize: 'vertical' }} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Brief del email, tono, objetivo..." />
+              <label style={{ fontSize: 10, color: 'var(--muted)', letterSpacing: '0.1em', fontWeight: 700, display: 'block', marginBottom: 5 }}>DESCRIPCIÓN / BRIEF</label>
+              <textarea rows={3} style={{ ...T.input, resize: 'vertical' }} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Objetivo del email, tono, CTA principal..." />
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button type="submit" style={{ padding: '8px 20px', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600 }}>Guardar</button>
-              <button type="button" onClick={() => setCreating(false)} style={{ padding: '8px 16px', background: 'transparent', color: 'var(--muted)', border: '1px solid var(--card-border)', borderRadius: 8, cursor: 'pointer' }}>Cancelar</button>
+              <button type="submit" style={{ ...T.btnPrimary, fontSize: 12, letterSpacing: '0.08em' }}>GUARDAR</button>
+              <button type="button" onClick={() => setCreating(false)} style={T.btnSecondary}>Cancelar</button>
             </div>
           </form>
         </div>
@@ -110,84 +94,69 @@ export default function ContentPlanPage() {
 
       {view === 'kanban' ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-          {statusOrder.map((status) => (
+          {statusOrder.map(status => (
             <div key={status}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: statusColor[status], display: 'inline-block' }} />
-                <span style={{ fontWeight: 600, fontSize: 13 }}>{statusLabel[status]}</span>
-                <span style={{ marginLeft: 'auto', background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 12, padding: '1px 8px', fontSize: 11, color: 'var(--muted)' }}>
-                  {grouped[status].length}
-                </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12 }}>
+                <div style={{ width: 7, height: 7, borderRadius: '50%', background: statusColor[status] }} />
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', color: 'var(--muted-2)' }}>{statusLabel[status].toUpperCase()}</span>
+                <span style={{ marginLeft: 'auto', fontSize: 10, background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 10, padding: '1px 7px', color: 'var(--muted)' }}>{grouped[status].length}</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minHeight: 80 }}>
-                {grouped[status].map((item) => (
-                  <div key={item.id} style={{ background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 10, padding: 14 }}>
-                    <div style={{ fontWeight: 500, fontSize: 14, marginBottom: 6, lineHeight: 1.4 }}>{item.title}</div>
-                    {item.description && <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8, lineHeight: 1.5 }}>{item.description}</div>}
-                    {item.planned_date && (
-                      <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 8 }}>
-                        📅 {new Date(item.planned_date + 'T00:00:00').toLocaleDateString('es')}
-                      </div>
-                    )}
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
-                      {statusOrder.filter((s) => s !== status).map((s) => (
-                        <button key={s} onClick={() => updateStatus(item.id, s)} style={{ padding: '2px 8px', fontSize: 11, background: `${statusColor[s]}18`, color: statusColor[s], border: 'none', borderRadius: 6, cursor: 'pointer' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {grouped[status].map(item => (
+                  <div key={item.id} style={{ ...T.card, padding: 14 }}>
+                    <div style={{ fontWeight: 600, fontSize: 13, lineHeight: 1.4, marginBottom: 6 }}>{item.title}</div>
+                    {item.description && <div style={{ fontSize: 11, color: 'var(--muted-2)', lineHeight: 1.5, marginBottom: 8 }}>{item.description}</div>}
+                    {item.planned_date && <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 8 }}>📅 {new Date(item.planned_date + 'T00:00:00').toLocaleDateString('es')}</div>}
+                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                      {statusOrder.filter(s => s !== status).map(s => (
+                        <button key={s} onClick={() => updateStatus(item.id, s)} style={{ padding: '2px 7px', fontSize: 10, background: `${statusColor[s]}18`, color: statusColor[s], border: 'none', borderRadius: 5, cursor: 'pointer', fontWeight: 700, letterSpacing: '0.04em' }}>
                           → {statusLabel[s]}
                         </button>
                       ))}
-                      <button onClick={() => deleteItem(item.id)} style={{ padding: '2px 8px', fontSize: 11, background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', borderRadius: 6, cursor: 'pointer', marginLeft: 'auto' }}>
-                        ✕
-                      </button>
+                      <button onClick={() => deleteItem(item.id)} style={{ padding: '2px 7px', fontSize: 10, background: 'rgba(220,38,38,0.1)', color: '#dc2626', border: 'none', borderRadius: 5, cursor: 'pointer', marginLeft: 'auto' }}>✕</button>
                     </div>
                   </div>
                 ))}
+                {grouped[status].length === 0 && (
+                  <div style={{ padding: '18px 12px', textAlign: 'center', fontSize: 11, color: 'var(--muted)', border: '1px dashed var(--card-border)', borderRadius: 10 }}>—</div>
+                )}
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div style={{ background: 'var(--card)', border: '1px solid var(--card-border)', borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ ...T.card, overflow: 'hidden' }}>
           {items.length === 0 ? (
-            <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted)', fontSize: 14 }}>No hay ideas aún.</div>
+            <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted-2)', fontSize: 14 }}>No hay ideas todavía.</div>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--card-border)' }}>
-                  {['Título', 'Estado', 'Fecha', 'Descripción', ''].map((h) => (
-                    <th key={h} style={{ padding: '10px 16px', textAlign: 'left', color: 'var(--muted)', fontWeight: 500, fontSize: 12, textTransform: 'uppercase' }}>{h}</th>
-                  ))}
+                  {['TÍTULO', 'ESTADO', 'FECHA', 'DESCRIPCIÓN', ''].map(h => <th key={h} style={T.tableHeader}>{h}</th>)}
                 </tr>
               </thead>
               <tbody>
-                {items.map((item) => (
+                {items.map(item => (
                   <tr key={item.id} style={{ borderBottom: '1px solid var(--card-border)' }}>
                     <td style={{ padding: '12px 16px', fontWeight: 500 }}>{item.title}</td>
                     <td style={{ padding: '12px 16px' }}>
                       {editId === item.id ? (
-                        <select
-                          value={editStatus}
-                          onChange={(e) => setEditStatus(e.target.value)}
-                          onBlur={() => updateStatus(item.id, editStatus)}
-                          autoFocus
-                          style={{ background: 'var(--background)', border: '1px solid var(--card-border)', borderRadius: 6, padding: '3px 6px', color: 'var(--foreground)', fontSize: 13 }}
-                        >
-                          {statusOrder.map((s) => <option key={s} value={s}>{statusLabel[s]}</option>)}
+                        <select value={editStatus} onChange={e => setEditStatus(e.target.value)} onBlur={() => updateStatus(item.id, editStatus)} autoFocus
+                          style={{ background: '#111', border: '1px solid var(--card-border)', borderRadius: 6, padding: '3px 6px', color: '#fff', fontSize: 12 }}>
+                          {statusOrder.map(s => <option key={s} value={s}>{statusLabel[s]}</option>)}
                         </select>
                       ) : (
-                        <span
-                          onClick={() => { setEditId(item.id); setEditStatus(item.status); }}
-                          style={{ background: `${statusColor[item.status]}22`, color: statusColor[item.status], padding: '3px 10px', borderRadius: 20, fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
-                        >
-                          {statusLabel[item.status]}
+                        <span onClick={() => { setEditId(item.id); setEditStatus(item.status); }} style={{ ...T.badge(statusColor[item.status]), cursor: 'pointer' }}>
+                          {statusLabel[item.status].toUpperCase()}
                         </span>
                       )}
                     </td>
                     <td style={{ padding: '12px 16px', color: 'var(--muted)', fontSize: 12 }}>
                       {item.planned_date ? new Date(item.planned_date + 'T00:00:00').toLocaleDateString('es') : '—'}
                     </td>
-                    <td style={{ padding: '12px 16px', color: 'var(--muted)', maxWidth: 300 }}>{item.description}</td>
+                    <td style={{ padding: '12px 16px', color: 'var(--muted-2)', maxWidth: 300, fontSize: 12 }}>{item.description}</td>
                     <td style={{ padding: '12px 16px' }}>
-                      <button onClick={() => deleteItem(item.id)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: 16 }}>✕</button>
+                      <button onClick={() => deleteItem(item.id)} style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: 16 }}>✕</button>
                     </td>
                   </tr>
                 ))}

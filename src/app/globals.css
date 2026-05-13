@@ -1,28 +1,44 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-  --background: #0f0f13;
-  --foreground: #e8e8f0;
-  --card: #1a1a24;
-  --card-border: #2a2a3a;
-  --accent: #6c63ff;
-  --accent-hover: #7c74ff;
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --muted: #6b7280;
+  /* Contract brand colors */
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #0f0f0f;
+  --card-2: #141414;
+  --card-border: #1f1f1f;
+  --card-border-2: #2a2a2a;
+
+  /* Contract green - hsl(155, 84%, 35%) */
+  --accent: #0f9e5e;
+  --accent-hover: #0eb86d;
+  --accent-dim: rgba(15, 158, 94, 0.15);
+  --accent-glow: rgba(15, 158, 94, 0.25);
+
+  --success: #10b981;
+  --warning: #eab308;
+  --danger: #dc2626;
+  --muted: #666666;
+  --muted-2: #999999;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', 'Space Grotesk', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #1a1a24; }
-::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #1f1f1f; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* Contract headings use Bebas Neue */
+.contract-heading {
+  font-family: 'Bebas Neue', 'Space Grotesk', sans-serif;
+  letter-spacing: 0.04em;
+}

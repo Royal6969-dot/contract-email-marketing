@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import * as T from '@/lib/theme';
 
 type GeneratedEmail = { subject: string; body: string };
 type Generation = {
@@ -26,10 +27,10 @@ const inputStyle = {
 };
 
 const statusColor: Record<string, string> = {
-  generating: '#3b82f6', done: '#f59e0b', approved: '#6c63ff', sent: '#22c55e',
+  generating: '#3b82f6', done: '#eab308', approved: '#0f9e5e', sent: '#10b981',
 };
 const statusLabel: Record<string, string> = {
-  generating: 'Generando...', done: 'Listo para revisar', approved: 'Aprobado', sent: 'Enviado',
+  generating: 'GENERANDO', done: 'PARA REVISAR', approved: 'APROBADO', sent: 'ENVIADO',
 };
 
 export default function AiGeneratorPage() {
@@ -104,12 +105,13 @@ export default function AiGeneratorPage() {
   }
 
   return (
-    <div style={{ padding: 32, maxWidth: 1100, margin: '0 auto' }}>
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 6 }}>
-          <span style={{ color: 'var(--accent)' }}>✦</span> Generador de Emails con IA
+    <div style={{ padding: 36, maxWidth: 1100, margin: '0 auto' }}>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ fontSize: 11, color: 'var(--accent)', letterSpacing: '0.16em', fontWeight: 700, marginBottom: 8 }}>CONTRACT — IA</div>
+        <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 42, letterSpacing: '0.06em', color: '#fff', lineHeight: 1, marginBottom: 8 }}>
+          ✦ GENERADOR DE EMAILS IA
         </h1>
-        <p style={{ color: 'var(--muted)', fontSize: 14 }}>
+        <p style={{ color: 'var(--muted-2)', fontSize: 14 }}>
           Pegá emails de inspiración → Claude genera versiones para Contract → Aprobás → Se envían solos.
         </p>
       </div>

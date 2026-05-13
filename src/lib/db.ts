@@ -62,6 +62,35 @@ function initSchema(db: Database.Database) {
       campaign_id INTEGER,
       created_at TEXT DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS video_plan (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      concept TEXT DEFAULT '',
+      hook TEXT DEFAULT '',
+      script_notes TEXT DEFAULT '',
+      hashtags TEXT DEFAULT '',
+      format TEXT DEFAULT 'vertical',
+      platform TEXT DEFAULT 'tiktok',
+      status TEXT NOT NULL DEFAULT 'idea',
+      planned_date TEXT,
+      duration_sec INTEGER,
+      tiktok_video_id TEXT,
+      views INTEGER DEFAULT 0,
+      likes INTEGER DEFAULT 0,
+      comments INTEGER DEFAULT 0,
+      shares INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS instagram_tokens (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      access_token TEXT NOT NULL,
+      refresh_token TEXT,
+      open_id TEXT,
+      expires_at TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
   `);
 }
 
@@ -102,5 +131,34 @@ export type AiGeneration = {
   generated_emails: string;
   status: 'pending' | 'generating' | 'done' | 'approved' | 'sent';
   campaign_id: number | null;
+  created_at: string;
+};
+
+export type VideoItem = {
+  id: number;
+  title: string;
+  concept: string;
+  hook: string;
+  script_notes: string;
+  hashtags: string;
+  format: 'vertical' | 'horizontal' | 'square';
+  platform: string;
+  status: 'idea' | 'scripting' | 'filming' | 'editing' | 'ready' | 'published';
+  planned_date: string | null;
+  duration_sec: number | null;
+  tiktok_video_id: string | null;
+  views: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  created_at: string;
+};
+
+export type InstagramToken = {
+  id: number;
+  access_token: string;
+  refresh_token: string | null;
+  open_id: string | null;
+  expires_at: string | null;
   created_at: string;
 };
