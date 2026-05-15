@@ -51,9 +51,9 @@ export default function Dashboard() {
   ] : [];
 
   const quickActions = [
-    { href: '/campaigns', label: '+ CAMPAÑA', primary: true },
+    { href: '/tutorial', label: '⬡ SETUP GUIDE', primary: true },
     { href: '/ai-generator', label: '✦ GENERAR IA' },
-    { href: '/video-plan', label: '▷ VIDEO PLAN' },
+    { href: '/campaigns', label: '+ CAMPAÑA' },
     { href: '/contacts', label: '+ CONTACTOS' },
   ];
 

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 
 const nav = [
   { href: '/', label: 'Dashboard', icon: '◈', section: null },
+  { href: '/tutorial', label: 'Guía Setup', icon: '⬡', section: null },
   { href: '/campaigns', label: 'Campañas Email', icon: '◉', section: 'EMAIL' },
   { href: '/ai-generator', label: 'Generador IA', icon: '✦', section: 'EMAIL' },
   { href: '/content-plan', label: 'Content Email', icon: '◎', section: 'EMAIL' },
